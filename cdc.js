@@ -200,8 +200,6 @@
       });
     }
 
-    // Remove transfers to/from the app
-    t = t.replace(/^.*Crypto.com\sApp.*($|\r\n|\r|\n)/gm, "");
 
     // Remove blank lines from the output
     t = t.replace(/^\s*[\r\n]/gm, "")
