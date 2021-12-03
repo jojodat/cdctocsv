@@ -5,6 +5,44 @@
       .getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) +
     ":" + ("00" + date.getSeconds()).slice(-2);
 
+  function withdrawals() {
+    return $.ajax({
+        url: "https://crypto.com/fe-ex-api/record/withdraw_list",
+        type: "POST",
+        dataType: "json",
+        contentType: "application/json",
+        headers: {
+          "exchange-token": document.cookie.match(/token=([0-9a-zA-Z]+)/)[1]
+        },
+        data: JSON.stringify({
+          "uaTime": dateStr,
+          "securityInfo": "{\"timestamp\":\"" + dateStr + "\",\"meta\":{}}",
+          "pageSize": 200,
+          "page": 1,
+          "coinSymbol": null
+        })
+      });
+  }
+
+  function deposits() {
+    return $.ajax({
+      url: "https://crypto.com/fe-ex-api/record/deposit_list",
+      type: "POST",
+      dataType: "json",
+      contentType: "application/json",
+      headers: {
+        "exchange-token": document.cookie.match(/token=([0-9a-zA-Z]+)/)[1]
+      },
+      data: JSON.stringify({
+        "uaTime": dateStr,
+        "securityInfo": "{\"timestamp\":\"" + dateStr + "\",\"meta\":{}}",
+        "pageSize": 200,
+        "page": 1,
+        "coinSymbol": null
+      })
+    });
+  }
+
   function crostaking() {
     return $.ajax({
       url: "https://crypto.com/fe-ex-api/record/staking_interest_history",
@@ -92,8 +130,8 @@
     });
   }
 
-  $.when(crostaking(), softstaking(), rebates(), syndicates(), supercharger()).done(
-      functioncros, stake, rebs, syn, sup){
+  $.when(withdrawals(), deposits(), crostaking(), softstaking(), rebates(), syndicates(), supercharger()).done(
+      function(withs, deps, cros, stake, rebs, syn, sup){
     var t = ["Date", "Sent Amount", "Sent Currency", "Received Amount",
       "Received Currency", "Fee Amount", "Fee Currency", "Net Worth Amount",
       "Net Worth Currency", "Label", "Description", "TxHash"].join(",");
@@ -107,6 +145,23 @@
       });
     }
 
+    if (deps[2].status == 200) {
+      deps[0].data.financeList.forEach(function(e) {
+        t += "\n" + [new Date(parseInt(e.updateAtTime)).toISOString(),
+          "", "", e.amount, e.symbol, "", "", "", "", "",
+          "Deposit from " + e.addressTo + " (" + e.status_text +
+          ")", e.txid].join(",");
+      });
+    }
+
+    if (cros[2].status == 200) {
+      cros[0].data.historyList.forEach(function(e) {
+        t += "\n" + [new Date(parseInt(e.createdAtTime)).toISOString(),
+          "", "", e.interestAmount, e.coinSymbol, "", "", "", "", "Reward",
+          "Interest on " + e.stakeAmount + " at " + e.apr * 100 + "% APR (" + e.status_text + ")",
+          ""].join(",");
+      });
+    }
 
     if (stake[2].status == 200) {
       stake[0].data.softStakingInterestList.forEach(function(e) {
