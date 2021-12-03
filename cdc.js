@@ -6,7 +6,7 @@
     ":" + ("00" + date.getSeconds()).slice(-2);
 
   function withdrawals() {
-    return $.ajax({
+    /*return $.ajax({
         url: "https://crypto.com/fe-ex-api/record/withdraw_list",
         type: "POST",
         dataType: "json",
@@ -21,11 +21,11 @@
           "page": 1,
           "coinSymbol": null
         })
-      });
+      }); */
   }
 
   function deposits() {
-    return $.ajax({
+    /*return $.ajax({
       url: "https://crypto.com/fe-ex-api/record/deposit_list",
       type: "POST",
       dataType: "json",
@@ -40,7 +40,7 @@
         "page": 1,
         "coinSymbol": null
       })
-    });
+    }); */
   }
 
   function crostaking() {
