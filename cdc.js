@@ -36,7 +36,7 @@
       data: JSON.stringify({
         "uaTime": dateStr,
         "securityInfo": "{\"timestamp\":\"" + dateStr + "\",\"meta\":{}}",
-        "pageSize": 200,
+        "pageSize": 1200,
         "page": 1,
         "coinSymbol": null
       })
